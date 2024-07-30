@@ -1,11 +1,13 @@
 const express = require('express');
 const path = require('path');
-const { router: urlRoute } = require('./routes/url');
 const { connectMongoDB } = require('./connection');
-const { URL } = require('./models/url');
 const { handleGetAnalytics } = require('./controllers/url');
+
+const { URL } = require('./models/url');
+
+const { router: urlRoute } = require('./routes/url');
 const { router: staticRoute } = require('./routes/staticrouter'); 
-const { ejs } = require('ejs');
+const { router: userRoute } = require('./routes/user');
 
 const app = express();
 const PORT = 8001;
@@ -20,6 +22,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use('/url', urlRoute);
+app.use('/user', userRoute);
 app.use('/', staticRoute);
 
 app.get('/url/:shortId', async (req, res) => {
