@@ -1,7 +1,9 @@
 const express = require('express');
 const path = require('path');
+const cookieParser = require('cookie-parser');
 const { connectMongoDB } = require('./connection');
 const { handleGetAnalytics } = require('./controllers/url');
+const { restrictToLoggedInUserOnly } = require('./middlewares/auth');
 
 const { URL } = require('./models/url');
 
@@ -20,8 +22,9 @@ app.set('views', path.resolve('./views'));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 
-app.use('/url', urlRoute);
+app.use('/url', restrictToLoggedInUserOnly, urlRoute);
 app.use('/user', userRoute);
 app.use('/', staticRoute);
 
