@@ -3,7 +3,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const { connectMongoDB } = require('./connection');
 const { handleGetAnalytics } = require('./controllers/url');
-const { restrictToLoggedInUserOnly } = require('./middlewares/auth');
+const { restrictToLoggedInUserOnly, checkAuth } = require('./middlewares/auth');
 
 const { URL } = require('./models/url');
 
@@ -26,7 +26,7 @@ app.use(cookieParser());
 
 app.use('/url', restrictToLoggedInUserOnly, urlRoute);
 app.use('/user', userRoute);
-app.use('/', staticRoute);
+app.use('/', checkAuth, staticRoute);
 
 app.get('/url/:shortId', async (req, res) => {
     const shortId = req.params.shortId;
@@ -39,10 +39,7 @@ app.get('/url/:shortId', async (req, res) => {
             },
         }
     });
-
-    res.redirect(entry.redirectUrl);
+    res.redirect(entry.redirectURL);
 });
-
-app.get('/analytics/:shortId', handleGetAnalytics);
 
 app.listen(PORT, ()=> console.log(`Server started at: ${PORT}`));

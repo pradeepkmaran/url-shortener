@@ -9,8 +9,9 @@ async function handleGenerateNewShortURL(req, res) {
     const shortID = shortid(8);
     await URL.create({
         shortId: shortID,
-        redirectUrl: body.url,
+        redirectURL: body.url,
         visitHistory: [],
+        createdBy: req.user._id,
     });
 
     return res.render('home', {
@@ -21,7 +22,6 @@ async function handleGenerateNewShortURL(req, res) {
 async function handleGetAnalytics(req, res) {
     const shortId = req.params.shortId;
     const result = await URL.findOne({shortId});
-    if(!result) return res.status(404).json({"Error": "URL not found"});
     return res.json({
         Clicks: result.visitHistory.length,
         Details: result.visitHistory
